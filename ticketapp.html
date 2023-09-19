@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TICKET APPLICATION</title>
+    <style>
+        body{
+            background-color: bisque;
+        }
+        input{
+            display:block;
+            margin-bottom: 10px;
+        }
+        table,th,td{
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th,td{
+            padding:5px;
+        }
+        #sbutton{
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>TICKET APPLICATION</h1>
+    <h3 id="tot">Total number of seats:</h3>
+    <h3 id="availSeats">Number of seats booked:</h3>
+    <h3>Ticket fare: Rs 100</h3>
+    <h3 id="tot_amt"></h3>
+
+    <form>
+        <input type="text" placeholder="Enter your name" id="username">
+        <input type="text" placeholder="Enter your mobile No" id="mobileno">
+        <input type="text" placeholder="Enter your Departure location" id="depart">
+        <input type="text" placeholder="Enter your Arrival Location" id="arrive">
+        <button type="button" onclick="submitData()" id="sbutton">Book ticket</button>
+    </form>
+    
+    <table>
+        <thead>
+            <th>USER NAME</th>
+            <th>MOBILE-NO</th>
+            <th>DEPARTURE LOCATION</th>
+            <th>ARRIVAL LOCATION</th>
+            <th>ACTION</th>
+        </thead>
+        <tbody id="userTable">
+
+        </tbody>
+    </table>
+
+    <script>
+        let dataArray=[];
+        let edit_index=-1;
+
+        let tot_seats=50;
+        let Avail_seats=0;
+        let amt=0;
+
+        let tot_no_seats=document.getElementById("tot");
+        tot_no_seats.innerHTML="Total number of seats: "+tot_seats;
+
+        let avail_seats=document.getElementById("availSeats");
+        avail_seats.innerHTML="Number of seats booked: "+Avail_seats;
+
+        let tot_amt=document.getElementById("tot_amt");
+        tot_amt.innerHTML="total amount collected: "+amt;
+
+        function submitData(){
+            let userData={
+                userName: document.getElementById("username").value,
+                mobileNo: document.getElementById("mobileno").value,
+                depart_location: document.getElementById("depart").value,
+                arrive_location: document.getElementById("arrive").value
+            };
+
+            if(edit_index !== -1){
+                dataArray[edit_index]=userData;
+                edit_index=-1;
+            }else{
+                if (Avail_seats < tot_seats) {
+                    dataArray.push(userData);
+                    tot_seats--;
+                    Avail_seats++;
+                    amt+=100;
+                } else {
+                    alert("All seats are booked.");
+                }
+            }
+
+            document.getElementById("username").value="";
+            document.getElementById("mobileno").value="";
+            document.getElementById("depart").value="";
+            document.getElementById("arrive").value="";
+
+            updateTable();
+            updateSeatsInfo();
+            updateTot_amt();
+        }
+
+        function editUserData(index){
+            let table_row=dataArray[index];
+            document.getElementById("username").value=table_row.userName;
+            document.getElementById("mobileno").value=table_row.mobileNo;
+            document.getElementById("depart").value=table_row.depart_location;
+            document.getElementById("arrive").value=table_row.arrive_location;
+
+            edit_index=index;
+        }
+
+        function deleteUserData(index){
+            dataArray.splice(index,1);
+            tot_seats++;
+            Avail_seats--;
+            amt-=100;
+            updateTable();
+            updateSeatsInfo();
+        }
+
+        function updateSeatsInfo(){
+            
+            tot_no_seats.innerHTML="Total number of seats: "+tot_seats;
+            avail_seats.innerHTML="Number of seats booked: "+Avail_seats;
+        }
+        function updateTot_amt(){
+            tot_amt.innerHTML="total amount collected: "+amt;
+        }
+
+        function updateTable(){
+            let tableData="";
+            for(let i=0 ; i < dataArray.length ; i++){
+                tempData=dataArray[i];
+                let data=`<tr>
+                    <td>${tempData.userName}</td>
+                    <td>${tempData.mobileNo}</td>
+                    <td>${tempData.depart_location}</td>
+                    <td>${tempData.arrive_location}</td>
+                    <td><button onclick="editUserData(${i})">EDIT</button>
+                        <button onclick="deleteUserData(${i})">DELETE</button>
+                    </td>
+                    </tr>`;
+
+                    tableData += data;
+            }
+            let table= document.getElementById("userTable")
+            table.innerHTML=tableData;
+        }
+    </script>
+</body>
+</html>
